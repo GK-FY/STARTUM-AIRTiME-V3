@@ -1,0 +1,93 @@
+{
+  "client_1760854033440_o4ieuwbwy": {
+    "id": "client_1760854033440_o4ieuwbwy",
+    "botName": "CLIENT ONE 1🌹",
+    "adminNumber": "254700363422",
+    "createdAt": "2025-10-19 06:07:13.547",
+    "status": "init_failed",
+    "lastShutdown": "2025-10-23 03:36:59.925"
+  },
+  "client_1760854801540_c27r7ekpr": {
+    "id": "client_1760854801540_c27r7ekpr",
+    "botName": "⚓AIRTIME BOT⚓",
+    "adminNumber": "",
+    "createdAt": "2025-10-19 06:20:01.587",
+    "status": "init_failed",
+    "lastShutdown": "2025-10-23 03:36:59.925"
+  },
+  "client_1760860096961_pz13ae4wa": {
+    "id": "client_1760860096961_pz13ae4wa",
+    "botName": "⚓BOT⚓",
+    "adminNumber": "254110307506",
+    "shadowAccountId": "4",
+    "shadowApiKey": "Admin-api1234",
+    "shadowApiSecret": "Admin-secret1234",
+    "statumConsumerKey": "19554299a04b8d74fefaaa4066766629244",
+    "statumConsumerSecret": "9Kf3kCFYois2hmaXO1yi195pVAhK",
+    "createdAt": "2025-10-19 07:48:17.008",
+    "status": "init_failed",
+    "bannedUsers": {},
+    "isPaused": false,
+    "lastShutdown": "2025-10-23 03:36:59.925"
+  },
+  "client_1760878461804_z738wqgeu": {
+    "id": "client_1760878461804_z738wqgeu",
+    "botName": "BT_✅",
+    "adminNumber": "254745448951",
+    "shadowAccountId": "6",
+    "shadowApiKey": "Admin-api1234",
+    "shadowApiSecret": "Admin-secret1234",
+    "statumConsumerKey": "19554299a04b8d74fefaaa4066766629244",
+    "statumConsumerSecret": "9Kf3kCFYois2hmaXO1yi195pVAhK",
+    "createdAt": "2025-10-19 12:54:21.875",
+    "status": "init_failed",
+    "bannedUsers": {},
+    "isPaused": false,
+    "lastShutdown": "2025-10-23 03:36:59.925"
+  },
+  "client_1760933128032_p1svcr0nc": {
+    "id": "client_1760933128032_p1svcr0nc",
+    "botName": "⚓AIRTIME BOT⚓",
+    "adminNumber": "254745448952",
+    "shadowAccountId": "10",
+    "shadowApiKey": "Admin-api1234",
+    "shadowApiSecret": "Admin-secret1234",
+    "statumConsumerKey": "19554299a04b8d74fefaaa4066766629244",
+    "statumConsumerSecret": "9Kf3kCFYois2hmaXO1yi195pVAhK",
+    "createdAt": "2025-10-20 04:05:28.080",
+    "status": "init_failed",
+    "bannedUsers": {},
+    "isPaused": false,
+    "lastShutdown": "2025-10-23 03:36:59.925"
+  },
+  "client_1761035202119_d42334yfq": {
+    "id": "client_1761035202119_d42334yfq",
+    "botName": "⚓AIRTIME BOT⚓",
+    "adminNumber": "25478951",
+    "shadowAccountId": "10",
+    "shadowApiKey": "Admin-api1234",
+    "shadowApiSecret": "Admin-secret1234",
+    "statumConsumerKey": "19554299a04b8d74fefaaa4066766629244",
+    "statumConsumerSecret": "9Kf3kCFYois2hmaXO1yi195pVAhK",
+    "createdAt": "2025-10-21 08:26:42.280",
+    "status": "init_failed",
+    "bannedUsers": {},
+    "isPaused": false,
+    "lastShutdown": "2025-10-23 03:36:59.925"
+  },
+  "client_1761035736009_5d5g6mf66": {
+    "id": "client_1761035736009_5d5g6mf66",
+    "botName": "⚓AIRTIME BOT⚓",
+    "adminNumber": "254700000000",
+    "shadowAccountId": "10",
+    "shadowApiKey": "Admin-api1234",
+    "shadowApiSecret": "Admin-secret1234",
+    "statumConsumerKey": "19554299a04b8d74fefaaa4066766629244",
+    "statumConsumerSecret": "9Kf3kCFYois2hmaXO1yi195pVAhK",
+    "createdAt": "2025-10-21 08:35:36.103",
+    "status": "init_failed",
+    "bannedUsers": {},
+    "isPaused": false,
+    "lastShutdown": "2025-10-23 03:36:59.925"
+  }
+}

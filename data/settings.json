@@ -1,0 +1,16 @@
+{
+  "app_name": "⚓AIRTIME BOT⚓",
+  "bot_name": "⚓AIRTIME BOT⚓",
+  "statum_consumer_key": "19554299a04b8d74fefaaa4066766629244",
+  "statum_consumer_secret": "9Kf3kCFYois2hmaXO1yi195pVAhK",
+  "shadow_api_key": "Admin-api1234",
+  "shadow_api_secret": "Admin-secret1234",
+  "shadow_account_id": "10",
+  "min_amount": "10",
+  "max_amount": "2500",
+  "discount_percent": "0",
+  "payment_poll_seconds": "20",
+  "Hh": "kira",
+  "access_code": "1234",
+  "admin_whatsapp": "254745448951"
+}
