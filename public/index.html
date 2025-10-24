@@ -1,0 +1,348 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>FY Bot — Multi-Client WhatsApp Dashboard</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .card {
+      background: #fff;
+      padding: 40px;
+      border-radius: 24px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      max-width: 520px;
+      width: 100%;
+      text-align: center;
+    }
+    h1 {
+      color: #667eea;
+      margin-bottom: 10px;
+      font-size: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+    .subtitle {
+      color: #718096;
+      margin-bottom: 30px;
+      font-size: 14px;
+    }
+    .qr-container {
+      width: 280px;
+      height: 280px;
+      margin: 0 auto 20px;
+      background: #f7fafc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 16px;
+      border: 3px dashed #e2e8f0;
+      position: relative;
+      overflow: hidden;
+    }
+    .qr-container img {
+      max-width: 100%;
+      max-height: 100%;
+    }
+    .status {
+      margin: 20px 0;
+      padding: 12px;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 16px;
+    }
+    .status.connected {
+      background: #c6f6d5;
+      color: #22543d;
+    }
+    .status.disconnected {
+      background: #fed7d7;
+      color: #742a2a;
+    }
+    .status.waiting {
+      background: #feebc8;
+      color: #7c2d12;
+    }
+    .hint {
+      color: #718096;
+      font-size: 13px;
+      margin: 15px 0;
+      line-height: 1.6;
+    }
+    .button {
+      display: inline-block;
+      margin: 10px 8px;
+      padding: 14px 28px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s;
+      cursor: pointer;
+      border: none;
+      font-size: 16px;
+    }
+    .button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    }
+    .button-secondary {
+      background: linear-gradient(135deg, #38b2ac 0%, #2c7a7b 100%);
+    }
+    .loading {
+      width: 60px;
+      height: 60px;
+      border: 4px solid #e2e8f0;
+      border-top-color: #667eea;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    .icon {
+      font-size: 64px;
+      margin-bottom: 10px;
+    }
+    .client-id-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 15px;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1 id="appTitle">🎯 FY Bot</h1>
+    <p class="subtitle">Multi-Client WhatsApp Airtime Bot</p>
+    
+    <div id="clientIdDisplay" style="display: none;">
+      <span class="client-id-badge" id="clientIdBadge"></span>
+    </div>
+    
+    <div class="qr-container" id="qrContainer">
+      <div class="icon">🔒</div>
+    </div>
+    
+    <div id="status" class="status waiting">
+      <span id="statusText">🔐 Secure Access Required</span>
+    </div>
+    
+    <div class="hint" id="hint">
+      Click "Generate QR Code" to create a new client connection
+    </div>
+    
+    <div>
+      <button class="button" onclick="generateNewClient()">
+        🆕 Generate QR Code
+      </button>
+      <button class="button button-secondary" onclick="openAdminPanel()">
+        🔐 Admin Dashboard
+      </button>
+    </div>
+  </div>
+
+  <script>
+    let currentClientId = null;
+    let socket = null;
+    
+    async function loadAppInfo() {
+      try {
+        const response = await fetch('/api/app-info');
+        const data = await response.json();
+        if (data.success && data.appName) {
+          document.getElementById('appTitle').textContent = `🎯 ${data.appName}`;
+          document.title = `${data.appName} — Multi-Client WhatsApp Dashboard`;
+        }
+      } catch (e) {
+        console.error('Failed to load app info:', e);
+      }
+    }
+    
+    loadAppInfo();
+
+    function initSocket(clientId) {
+      if (socket) {
+        socket.disconnect();
+      }
+      
+      socket = io({ query: { clientId } });
+      const qrContainer = document.getElementById('qrContainer');
+      const status = document.getElementById('status');
+      const statusText = document.getElementById('statusText');
+      const hint = document.getElementById('hint');
+
+      socket.on('qr', data => {
+        if (data && data.url) {
+          qrContainer.innerHTML = '<img src="' + data.url + '" alt="QR Code">';
+          status.className = 'status waiting';
+          statusText.textContent = '📱 Scan the QR code';
+          hint.textContent = 'Open WhatsApp → Settings → Linked Devices → Link a Device';
+          
+          Swal.fire({
+            icon: 'success',
+            title: '✨ QR Code Ready!',
+            html: 'Your QR code has been generated.<br><strong>Scan it with WhatsApp to connect!</strong>',
+            confirmButtonText: 'Got it!',
+            confirmButtonColor: '#667eea'
+          });
+        }
+      });
+
+      socket.on('status', data => {
+        if (!data) return;
+        
+        if (data.connected) {
+          qrContainer.innerHTML = '<div class="icon">✅</div>';
+          status.className = 'status connected';
+          statusText.textContent = '✅ WhatsApp Connected!';
+          hint.textContent = 'Your bot is now online and ready to receive messages';
+          
+          Swal.fire({
+            icon: 'success',
+            title: '🎉 Connected!',
+            text: 'Your WhatsApp bot is now online and ready!',
+            confirmButtonText: 'Awesome!',
+            confirmButtonColor: '#667eea'
+          });
+        } else {
+          qrContainer.innerHTML = '<div class="loading"></div>';
+          status.className = 'status disconnected';
+          statusText.textContent = '❌ Disconnected';
+          hint.textContent = 'Waiting for QR code to reconnect...';
+        }
+      });
+
+      socket.on('connect', () => {
+        console.log('Socket connected for client:', clientId);
+      });
+
+      socket.on('disconnect', () => {
+        console.log('Socket disconnected');
+        status.className = 'status disconnected';
+        statusText.textContent = '⚠️ Connection lost';
+      });
+    }
+
+    async function generateNewClient() {
+      const { value: accessCode } = await Swal.fire({
+        title: '🔐 Enter Access Code',
+        html: '<p style="color: #718096; margin-bottom: 15px;">Please enter your access code to generate a new QR code</p>',
+        input: 'password',
+        inputPlaceholder: 'Enter access code',
+        inputAttributes: {
+          autocapitalize: 'off',
+          autocorrect: 'off',
+          style: 'text-align: center; font-size: 18px; letter-spacing: 2px;'
+        },
+        showCancelButton: true,
+        confirmButtonText: '✓ Verify',
+        cancelButtonText: '✕ Cancel',
+        confirmButtonColor: '#667eea',
+        cancelButtonColor: '#cbd5e0',
+        inputValidator: (value) => {
+          if (!value) {
+            return 'Please enter an access code'
+          }
+        }
+      });
+
+      if (!accessCode) return;
+
+      try {
+        const response = await fetch('/api/verify-access-code', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ accessCode })
+        });
+
+        const result = await response.json();
+
+        if (!result.success) {
+          Swal.fire({
+            icon: 'error',
+            title: '❌ Access Denied',
+            text: result.message || 'Invalid access code',
+            confirmButtonColor: '#e53e3e'
+          });
+          return;
+        }
+
+        currentClientId = result.clientId;
+        document.getElementById('clientIdDisplay').style.display = 'block';
+        document.getElementById('clientIdBadge').textContent = '🆔 Client: ' + currentClientId;
+        
+        initSocket(currentClientId);
+
+        const qrContainer = document.getElementById('qrContainer');
+        qrContainer.innerHTML = '<div class="loading"></div>';
+        document.getElementById('statusText').textContent = '⏳ Generating QR code...';
+        document.getElementById('hint').textContent = 'Please wait while we set up your connection...';
+
+        Swal.fire({
+          icon: 'success',
+          title: '✅ Access Granted!',
+          html: `Your client ID is: <strong>${currentClientId}</strong><br><br>Generating QR code...`,
+          timer: 2000,
+          timerProgressBar: true,
+          showConfirmButton: false
+        });
+
+      } catch (error) {
+        Swal.fire({
+          icon: 'error',
+          title: '❌ Error',
+          text: 'Failed to verify access code. Please try again.',
+          confirmButtonColor: '#e53e3e'
+        });
+      }
+    }
+
+    async function openAdminPanel() {
+      const { value: token } = await Swal.fire({
+        title: '🔐 Admin Login',
+        html: '<p style="color: #718096; margin-bottom: 15px;">Enter your admin token to access the dashboard</p>',
+        input: 'password',
+        inputPlaceholder: 'Enter admin token',
+        inputAttributes: {
+          autocapitalize: 'off',
+          autocorrect: 'off'
+        },
+        showCancelButton: true,
+        confirmButtonText: '🚀 Login',
+        cancelButtonText: '✕ Cancel',
+        confirmButtonColor: '#667eea',
+        cancelButtonColor: '#cbd5e0',
+        inputValidator: (value) => {
+          if (!value) {
+            return 'Please enter your admin token'
+          }
+        }
+      });
+
+      if (token && token.trim()) {
+        window.location.href = '/admin?token=' + encodeURIComponent(token.trim());
+      }
+    }
+  </script>
+</body>
+</html>
